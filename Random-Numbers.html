@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>What number?</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link href="normalize.css" rel="stylesheet">
+	<style media="screen" type="text/css">
+		body {
+			/* background-color: #444; */
+			background-color: #151515;
+		}
+		h1 {
+			/* http://stackoverflow.com/questions/3845433/css-line-spacing */
+			line-height: 90vh;
+			font-family: "calibri", Garamond, 'Comic Sans';
+			font-size: 80vh;
+            font-weight: bold;
+            font-style: normal;
+			text-align: center;
+			margin: 5vh 0;
+			padding: 0;
+		}
+		.hide {
+			display: none;
+		}
+		.run-animation {
+			/* nice easy speed 
+			animation: zoom 1.2s; */
+			animation: zoom 0.7s;
+		}
+		/* Zoom animation: https://css-tricks.com/controlling-css-animations-transitions-javascript/ */
+		@keyframes zoom {
+			0%   { transform: scale(0); }
+			100% { transform: scale(1); }
+		}
+		/* TODO: still working on this */
+		@keyframes zoom-and-fade {
+			0%   { opacity: 1; }
+			5%   { transform: scale(0); }
+			80%  { transform: scale(1); }
+			90%  { opacity: 1; }
+			100% { opacity: 0; }
+		}
+		.plain {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  #E6E6E6,
+			 0 0 70px  #E6E6E6;
+		}
+		.salmon {
+			color: rgb(250, 128, 114);
+		}
+		.green {
+			color: rgb(114, 191, 170);
+		}
+		.blue {
+			color: rgb(114, 140, 191);
+		}
+		.soft-emboss {
+			color: rgba(0,0,0,0.6);
+			text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(255,255,255,0.3);
+		}
+		.superhero {
+			color: #000;
+			text-shadow: -10px 10px 0px #00e6e6,
+                 -20px 20px 0px #01cccc,
+                 -30px 30px 0px #00bdbd;
+		}
+		.super-turquoise {
+			color: #000;
+			text-shadow: -10px 10px 0px #00e6e6,
+                 -20px 20px 0px #01cccc;
+		}
+		.glow-yellow {
+			color: #000;
+		   	text-shadow: 1px 0px 20px yellow;
+		}
+		.glow-pink {
+			color: #000;
+		   	text-shadow: 1px 0px 20px #FF1177;
+		}
+		.glow-salmon {
+			color: #000;
+			text-shadow: 1px 0px 20px rgb(250, 128, 114);
+		}
+		.glow-lavender {
+			color: #000;
+			text-shadow: 1px 0px 20px rgb(119, 114, 191);
+		}
+		.neon-pink {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  #FF1177,
+			 0 0 70px  #FF1177;
+		}
+		.neon-lavender {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  rgb(119, 114, 191),
+			 0 0 70px  rgb(119, 114, 191);
+		}
+		.neon-yellow {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  yellow,
+			 0 0 70px  yellow;
+		}
+		.neon-salmon {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  rgb(250, 128, 114),
+			 0 0 70px  rgb(250, 128, 114);
+		}
+		.neon-turquoise {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  #01cccc,
+			 0 0 70px  #01cccc;
+		}
+		.neon-blue {
+			color: #000;
+			text-shadow: 0 0 10px #fff,
+			 0 0 20px  #fff,
+			 0 0 30px  #fff,
+			 0 0 40px  rgb(114, 140, 191),
+			 0 0 70px  rgb(114, 140, 191);
+		}
+		.neon {
+			text-shadow: 0 0 10px #fff,
+			0 0 20px  #fff,
+			0 0 30px  #fff,
+			0 0 40px  #FF1177,
+			0 0 70px  #FF1177,
+			0 0 80px  #FF1177,
+			0 0 100px #FF1177,
+			0 0 150px #FF1177;
+		}
+	</style>
+</head>
+<body>
+	<h1 id="number" class="run-animation plain">0</h1>
+	
+	<script type="text/javascript">
+		var displayNumber = document.getElementById("number");
+		var runCount = 0; // Current run counter.
+		var timerId; // The id for the interval timer.
+		var practice; // Go from 0 to this number for the first N number to practice.
+		var randoms; // Number of randoms to practice afterwards.
+		var maxCount; // Total of practice and randoms for use in loop count checking.
+		var displayMin; // min for randoms range
+		var displayMax; // max for randoms range
+		var practiceNumbers; // The array of practice numbers to start with.
+		/**
+		 * All the designs for the text were pulled from these examples:
+		 * http://designshack.net/articles/css/12-fun-css-text-shadows-you-can-copy-and-paste/
+		 * http://codepen.io/NobodyRocks/pen/qzfoc
+		 * http://stackoverflow.com/questions/5201949/how-to-make-glowing-text-in-html-and-css
+		 * http://enjoycss.com/gallery/text_effects
+		 */
+		var textDesigns = ['plain', 'green', 'blue', 'neon-blue', 'neon-pink', 'neon-lavender', 'neon-yellow', 'neon-salmon', 'neon-turquoise'];
+		var currentDesign = 'plain';
+		
+		// nw.js
+		// var gui = require('nw.gui');
+		// var win = gui.Window.get();
+		
+		window.onload = function() {
+			/**
+			 * If you want to ensure no repeats, you could make an array containing the set of all numbers
+			 * to practice, then shuffle it to go through 1 by 1.
+			 * http://stackoverflow.com/questions/3746725/create-a-javascript-array-containing-1-n
+			 */
+			// Create the initial set practice numbers.
+			practice = 4; // We always start at 0 so take that into account.
+			practiceNumbers = Array.apply(null, {length: practice+1}).map(Number.call, Number);
+			practiceNumbers.push(6); practice++;
+			practiceNumbers.push(8); practice++;
+			practiceNumbers.push(10); practice++;
+			practiceNumbers.push(20); practice++;
+			practiceNumbers.push(50); practice++;
+			// practiceNumbers = shuffle(practiceNumbers);
+			
+		 	// Set the other loop params.
+			randoms = 10;
+			maxCount = practice + randoms; // Never changes.
+		 	
+			 // Configure your random range.
+			displayMin = 0;
+			displayMax = 100;
+			
+			// Shuffle our list of designs
+			textDesigns = shuffle(textDesigns);
+
+			// Set keyboard shortcuts
+			document.onkeypress = keyboard;
+			timerId = setInterval(timerMethod, 2000); // Always do this last as it starts the program.
+		}
+		
+		function start() {
+			
+		}
+
+		// http://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+		function keyboard(e) {
+		    var charCode = (typeof e.which == "number") ? e.which : e.keyCode
+		    // http://stackoverflow.com/questions/4471582/javascript-keycode-vs-which
+		    // var key = event.which || event.keyCode; // this also works
+		    switch (charCode)
+		    {
+		        case 13: // Enter
+		            start();
+		            break;
+		        case 27: // Esc
+		            // win.close();
+		            break;
+		        default:
+		            console.log(charCode);
+		            break;
+		    }
+		}
+		
+		/**
+		 * Returns a random integer between min (inclusive) and max (inclusive)
+		 * Using Math.round() will give you a non-uniform distribution!
+		 * http://stackoverflow.com/questions/1527803/generating-random-numbers-in-javascript-in-a-specific-range
+		 */
+		function getRandomInt(min, max) {
+		    return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+		
+		/**
+		 * http://stackoverflow.com/questions/1245617/want-a-javascript-function-to-run-every-minute-but-max-3-times
+		 * http://stackoverflow.com/questions/2170923/whats-the-easiest-way-to-call-a-function-every-5-seconds-in-jquery
+		 * https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval
+		 */
+		function timerMethod() {
+		    runCount++;
+		    if(runCount > maxCount) {
+				clearInterval(timerId);
+				// win.close();
+			}
+			// Reset animation: https://css-tricks.com/restart-css-animation/
+			displayNumber.classList.remove("run-animation");
+			displayNumber.offsetWidth = displayNumber.offsetWidth
+			setRandomNumber();
+			displayNumber.classList.add("run-animation");
+			setRandomDesign();
+		}
+		
+		/**
+		 * Note, that based on the logic of my IFs, this will work perfectly for doing the initial
+		 * practice of 0 to N ONLY IF you set the initial contents of the <h1> tag to 0. The contents
+		 * of that tag will always be the first number. The loop then changes it with 1 to N before
+		 * going to random numbers.
+		 */
+		function setRandomNumber() {
+			if (runCount > practice) {
+				displayNumber.innerHTML = getRandomInt(displayMin, displayMax);
+			} else {
+				// http://stackoverflow.com/questions/5765398/whats-the-best-way-to-convert-a-number-to-a-string-in-javascript
+				// displayNumber.innerHTML = '' + runCount;
+				displayNumber.innerHTML = '' + practiceNumbers[runCount];
+			}
+		}
+		
+		function setRandomDesign() {
+			displayNumber.classList.remove(currentDesign);
+			// currentDesign = textDesigns[getRandomInt(0, textDesigns.length-1)];
+			if (textDesigns.indexOf(currentDesign) + 1 == textDesigns.length) {
+				textDesigns = shuffle(textDesigns);
+				currentDesign = textDesigns[0];
+			}
+			else {
+				currentDesign = textDesigns[textDesigns.indexOf(currentDesign) + 1];
+			}
+			// console.log(currentDesign);
+			displayNumber.classList.add(currentDesign);
+		}
+		
+		// http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+		function shuffle(array) {
+			var currentIndex = array.length, temporaryValue, randomIndex ;
+			
+			// While there remain elements to shuffle...
+			while (0 !== currentIndex) {
+			
+				// Pick a remaining element...
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex -= 1;
+				
+				// And swap it with the current element.
+				temporaryValue = array[currentIndex];
+				array[currentIndex] = array[randomIndex];
+				array[randomIndex] = temporaryValue;
+			}
+			
+			return array;
+		}
+	</script>
+</body>
+</html>
